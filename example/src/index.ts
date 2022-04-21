@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 
 import { AbortController } from "node-abort-controller";
 
-import { EventStreamer } from "eventstreamer";
+import { EventIterable } from "event-iterable";
 
 
 class TimerEventEmitter extends EventEmitter {
@@ -32,7 +32,7 @@ async function main():Promise<void> {
     // ee.on( "tock", console.log );
 
     const abortController = new AbortController;
-    const est = new EventStreamer( ee, ["tick", "tock"], abortController );
+    const est = new EventIterable( ee, ["tick", "tock"], abortController );
     setTimeout( abortController.abort.bind(abortController), 10000 );
     abortController.signal.addEventListener( "abort", ee.stop.bind(ee) );
     for await ( const event of est ) {

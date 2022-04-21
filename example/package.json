@@ -3,7 +3,7 @@
     "name": "Carl Broadbent"
   },
   "dependencies": {
-    "eventstreamer": "file:..",
+    "event-iterable": "file:..",
     "node-abort-controller": "^3.0.1"
   },
   "description": "FileShadow Desktop App",
