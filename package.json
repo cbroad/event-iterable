@@ -1,0 +1,51 @@
+{
+  "author": {
+    "name": "Carl Broadbent"
+  },
+  "bugs": {
+    "url": "https://github.com/cbroad/event-iterable/issues"
+  },
+  "dependencies": {
+    "semasync": "^1.0.2"
+  },
+  "description": "wrapper that creates an AsyncIterable of events coming from an EventEmitter",
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "typescript": "^4.0.5"
+  },
+  "files": [
+    "js/*",
+    "types/*"
+  ],
+  "homepage": "https://github.com/cbroad/event-iterable#readme",
+  "keywords": [
+    "async",
+    "asynciterable",
+    "asynciterator",
+    "asynchronous",
+    "await",
+    "concurrency",
+    "event",
+    "eventemitter",
+    "iterable",
+    "iterator",
+    "sequential",
+    "typescript"
+  ],
+  "license": "MIT",
+  "main": "js/EventIterable.js",
+  "name": "event-iterable",
+  "productName": "EventIterable",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cbroad/event-iterable.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf js node_modules package-lock.json types",
+    "prepare": "npm run build",
+    "unbuild": "rimraf js types"
+  },
+  "types": "./types/EventIterable.d.ts",
+  "version": "1.0.0"
+}
