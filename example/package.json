@@ -6,7 +6,6 @@
     "event-iterable": "file:..",
     "node-abort-controller": "^3.0.1"
   },
-  "description": "FileShadow Desktop App",
   "devDependencies": {
     "@types/node": "^16.0.0",
     "rimraf": "^3.0.2",
@@ -21,16 +20,11 @@
     "types/*"
   ],
   "license": "UNLICENSED",
-  "main": "js/index.js",
-  "name": "fileshadow-folder-watcher",
-  "productName": "FileShadow",
   "scripts": {
     "build": "( cd .. && npm run build ) && tsc",
     "clean": "rimraf js node_modules package-lock.json types",
     "prepare": "npm run build",
     "rebuild": "npm run unbuild && npm run build",
     "unbuild": "( cd .. && npm run unbuild ) && rimraf js types"
-  },
-  "types": "./types/index.d.ts",
-  "version": "1.0.0"
+  }
 }
