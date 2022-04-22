@@ -1,7 +1,4 @@
 {
-  "author": {
-    "name": "Carl Broadbent"
-  },
   "dependencies": {
     "event-iterable": "file:..",
     "node-abort-controller": "^3.0.1"
@@ -11,15 +8,6 @@
     "rimraf": "^3.0.2",
     "typescript": "^4.0.5"
   },
-  "engines": {
-    "nodejs": "12.18.3"
-  },
-  "files": [
-    "config/*",
-    "js/*",
-    "types/*"
-  ],
-  "license": "UNLICENSED",
   "scripts": {
     "build": "( cd .. && npm run build ) && tsc",
     "clean": "rimraf js node_modules package-lock.json types",
