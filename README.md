@@ -1,6 +1,6 @@
 # event-iterable
 
-An example of using event-iterable to wrap and event emitter and use it as an AsyncIterable.  Also shows how to use an AbortController to stop it.
+An example of using event-iterable to wrap and event emitter and use it as an AsyncIterable.  Also shows how to use an AbortController to stop it, the non-controller version is simply the .stop() method.
 
 ```
 const { EventEmitter } = require( "events" );
