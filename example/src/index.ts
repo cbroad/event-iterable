@@ -26,18 +26,16 @@ class TimerEventEmitter extends EventEmitter {
     }
 }
 
-async function main():Promise<void> {
+( async function main():Promise<void> {
     const ee = new TimerEventEmitter();
     // ee.on( "tick", console.log );
     // ee.on( "tock", console.log );
 
-    const abortController = new AbortController;
+    const abortController = new AbortController();
     const est = new EventIterable( ee, ["tick", "tock"], abortController );
     setTimeout( abortController.abort.bind(abortController), 10000 );
     abortController.signal.addEventListener( "abort", ee.stop.bind(ee) );
     for await ( const event of est ) {
         console.log( event );
     }
-}
-
-main();
+} )();
