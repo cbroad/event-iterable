@@ -95,11 +95,11 @@ export class EventIterable implements AsyncIterable<{eventName:string|symbol, va
 
     /**
      * Wraps an EventEmitter into an EventIterable.
-     * @see {@link EventIterable}
      * 
      * @param {EventEmitter} eventEmitter the event emitter being wrapped
      * @param {string|symbol|(string|symbol)[]} eventNames the event names to be captured
      * @param {AbortSignal} [signal] (optional) signal from an AbortController to signal the EventIterable to stop as an alternative to eventIterable.stop()
+     * @returns {EventIterable} {@link EventIterable}
      */
     public static wrap( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[] ):EventIterable;
     public static wrap( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[], signal:AbortSignal ):EventIterable;
