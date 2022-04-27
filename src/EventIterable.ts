@@ -2,64 +2,64 @@ import { EventEmitter } from "events";
 
 import { Mutex } from "semasync";
 
-export class EventIterable implements AsyncIterable<{eventName:string|symbol, value:any|any[]}> {
+export class EventIterable implements AsyncIterable<{eventName:string|symbol, value:any}> {
 
-    #abortController:AbortController|undefined;
-    #emitter:EventEmitter;
+    #abortHandler:(()=>void)|undefined;
+    #eventEmitter:EventEmitter;
     #eventNames:(string|symbol)[];
-    #internalEmitter:EventEmitter = new EventEmitter();
+    #privateEmitter:EventEmitter = new EventEmitter();
+    #signal:AbortSignal|undefined;
 
-    public constructor( ee:EventEmitter, eventName:string|symbol );
-    public constructor( ee:EventEmitter, eventName:string|symbol, abortController:AbortController );
-    public constructor( ee:EventEmitter, eventNames:(string|symbol)[] );
-    public constructor( ee:EventEmitter, eventNames:(string|symbol)[], abortController:AbortController );
-    public constructor( ee:EventEmitter, eventNames:string|symbol|(string|symbol)[], abortController?:AbortController ) {
-        this.#abortController = abortController;
-        this.#emitter = ee;
+    public constructor( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[] );
+    public constructor( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[], signal:AbortSignal );
+    public constructor( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[], signal?:AbortSignal ) {
+        this.#signal = signal;
+        this.#eventEmitter = eventEmitter;
         this.#eventNames = Array.isArray(eventNames) ? eventNames : [ eventNames ];
 
-        this.stop.bind( this );
-
-        if(this.#abortController?.signal.aborted===false ) {
-            const abortHandler = () => {
-                this.#abortController?.signal.removeEventListener( "abort", abortHandler );
-                this.stop();
-            }
-            this.#abortController?.signal.addEventListener( "abort", abortHandler );
+        if(this.#signal?.aborted===false ) {
+            this.#abortHandler = this.stop.bind(this);
+            this.#signal.addEventListener( "abort", this.#abortHandler );
         }
         
     }
 
     public async* [Symbol.asyncIterator](): AsyncIterator<any, any, undefined> {
         const mutex:Mutex = new Mutex();
-        const queue:{ eventName:string|symbol, value?:any}[] = [];
-        let running:boolean = this.#abortController ? !this.#abortController.signal.aborted : true;
+        const queue:{ eventName:string|symbol, value?:any }[] = [];
+        let running:boolean = this.#signal ? this.#signal.aborted===false : true;
 
         const handlers:{ [type:string|symbol]:(...value:any[])=>unknown } = {};
 
-        this.#eventNames.forEach( eventName => {
-            handlers[eventName] = ( ...args:any[] ) => {
+        for( const eventName of this.#eventNames ) {
+            handlers[eventName] = handler
+            this.#eventEmitter.addListener( eventName, handler );
+            function handler( ...args:any[] ) {
                 queue.push( { eventName, value:args.length<=1?args[0]:args } );
                 if( mutex.waiting ) {
                     mutex.release();
                 }
-            };
-            this.#emitter.addListener( eventName, handlers[ eventName ] );
-        } );
-        this.#internalEmitter.on( "stop", onStop );
+            }
+        }
+        this.#privateEmitter.on( "stop", onStop );
 
         await mutex.acquire();
         while( running ) {
             if( queue.length===0 ) {
-                 await mutex.acquire();
+                await mutex.acquire();
             } else {
                 const evt = queue.shift();
                 yield evt;
             }
         }
+        mutex.release();
 
-        this.#internalEmitter.removeListener( "stop", onStop );
-        Object.entries( handlers ).forEach( ( [ eventName, handler ] ) => this.#emitter.removeListener( eventName, handler ) );
+        console.log( queue );
+
+        this.#privateEmitter.removeListener( "stop", onStop );
+        for( const [ eventName, handler ] of Object.entries( handlers ) ) {
+            this.#eventEmitter.removeListener( eventName, handler );
+        }
 
         function onStop() {
             running = false;
@@ -70,7 +70,11 @@ export class EventIterable implements AsyncIterable<{eventName:string|symbol, va
     }
 
     public stop() {
-        this.#internalEmitter.emit( "stop" );
+        if( this.#signal?.aborted===true && this.#abortHandler ) {
+            this.#signal!.removeEventListener( "abort", this.#abortHandler );
+            this.#abortHandler = undefined;
+        }
+        this.#privateEmitter.emit( "stop" );
     }
 
 }

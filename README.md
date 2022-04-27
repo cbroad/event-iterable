@@ -1,6 +1,32 @@
-# event-iterable
+- [Class:EventIterable](#classeventiterable)
+  - [new EventIterable( eventEmitter, eventNames[, abortController ] )](#new-eventiterable-eventemitter-eventnames-abortcontroller)
+  - [eventIterable.stop()](#eventiterablestop)
 
-An example of using event-iterable to wrap and event emitter and use it as an AsyncIterable.  Also shows how to use an AbortController to stop it, the non-controller version is simply the .stop() method.
+# Class:EventIterable
+EventIterable is a wrapper for [EventEmitter](https://nodejs.org/api/events.html#class-eventemitter), creating an AsyncIterable of the requested events which the user can, in an [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) context, iterate through using a [for await ... of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of) statement.  When being iterated over, EventIterable produces objects of type: <code language="typescript">{ eventName:string|symbol, value:any }</code> where eventName is the eventNames provided in the constructor.
+
+```javascript
+const { EventIterable } = require( "eventIterable" );
+```
+```javascript
+import { EventIterable } from "eventIterable";
+```
+
+## new EventIterable( eventEmitter, eventNames[, abortController ] )
+- **eventEmitter** <code>&lt;EventEmitter&gt;</code> the event emitter being wrapped
+- **eventNames** <code>&lt;string&gt;</code> | <code>&lt;symbol&gt;</code> | <code>&lt;(string|symbol)[]&gt;</code> the event names to be captured
+- **abortController** <code>&lt;AbortController&gt;</code> optional AbortController to signal the EventIterable to stop as an alternative to eventIterable.stop()
+
+
+## eventIterable.stop()
+The stop function causes the EventIterable to stop handling events and exit its generator function.
+
+<br />
+<br />
+
+# Example
+
+An example of using event-iterable to wrap an EventEmitter and use it as an AsyncIterable.  The EventEmitter in this example alternates between two types of messages, "tick" and "tock" accompanied by a date object, which are emitted at a variable, random interval between 0 and 2 seconds.  The example also shows how to use an AbortController (provided by the [node-abort-controller](https://www.npmjs.com/package/node-abort-controller) package) to stop it, the non-controller version is simply the .stop() method.
 
 ```javascript
 const { EventEmitter } = require( "events" );
@@ -30,17 +56,19 @@ class TimerEventEmitter extends EventEmitter {
     }
 }
 
-( async function main() {
-    const ee = new TimerEventEmitter();
-    // ee.on( "tick", console.log );
-    // ee.on( "tock", console.log );
+( async function main():Promise<void> {
+    const eventEmitter = new TimerEventEmitter();
+    // eventEmitter.on( "tick", console.log );
+    // eventEmitter.on( "tock", console.log );
 
+    // After 10 seconds, we'll abort using the Abort Controller
     const abortController = new AbortController();
-    const est = new EventIterable( ee, ["tick", "tock"], abortController );
-    setTimeout( abortController.abort.bind(abortController), 10000 );
-    abortController.signal.addEventListener( "abort", ee.stop.bind(ee) );
-    for await ( const event of est ) {
+    setTimeout( () => abortController.abort(), 10000 );
+
+    const iterable = new EventIterable( eventEmitter, ["tick", "tock"], abortController.signal );
+    for await ( const event of iterable ) {
         console.log( event );
     }
+    eventEmitter.stop();
 } )();
 ```
