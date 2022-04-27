@@ -13,10 +13,10 @@ import { EventIterable } from "eventIterable";
 
 EventIterable is a wrapper for [EventEmitter](https://nodejs.org/api/events.html#class-eventemitter), creating an AsyncIterable of the requested events which the user can, in an [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) context, iterate through using a [for await ... of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of) statement.  When being iterated over, EventIterable produces objects of type: <code language="typescript">{ eventName:string|symbol, value:any }</code> where eventName is the eventNames provided in the constructor.
 
-## new EventIterable( eventEmitter, eventNames[, abortController ] )
+## new EventIterable( eventEmitter, eventNames[, signal ] )
 - **eventEmitter** <code>&lt;EventEmitter&gt;</code> the event emitter being wrapped
 - **eventNames** <code>&lt;string&gt;</code> | <code>&lt;symbol&gt;</code> | <code>&lt;(string|symbol)[]&gt;</code> the event names to be captured
-- **abortController** <code>&lt;AbortController&gt;</code> optional AbortController to signal the EventIterable to stop as an alternative to eventIterable.stop()
+- **signal** <code>&lt;AbortSignal&gt;</code> optional signal from an AbortController to signal the EventIterable to stop as an alternative to eventIterable.stop()
 
 
 ## eventIterable.stop()
