@@ -3,7 +3,6 @@
   - [eventIterable.stop()](#eventiterablestop)
 
 # Class:EventIterable
-EventIterable is a wrapper for [EventEmitter](https://nodejs.org/api/events.html#class-eventemitter), creating an AsyncIterable of the requested events which the user can, in an [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) context, iterate through using a [for await ... of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of) statement.  When being iterated over, EventIterable produces objects of type: <code language="typescript">{ eventName:string|symbol, value:any }</code> where eventName is the eventNames provided in the constructor.
 
 ```javascript
 const { EventIterable } = require( "eventIterable" );
@@ -11,6 +10,8 @@ const { EventIterable } = require( "eventIterable" );
 ```javascript
 import { EventIterable } from "eventIterable";
 ```
+
+EventIterable is a wrapper for [EventEmitter](https://nodejs.org/api/events.html#class-eventemitter), creating an AsyncIterable of the requested events which the user can, in an [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) context, iterate through using a [for await ... of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of) statement.  When being iterated over, EventIterable produces objects of type: <code language="typescript">{ eventName:string|symbol, value:any }</code> where eventName is the eventNames provided in the constructor.
 
 ## new EventIterable( eventEmitter, eventNames[, abortController ] )
 - **eventEmitter** <code>&lt;EventEmitter&gt;</code> the event emitter being wrapped

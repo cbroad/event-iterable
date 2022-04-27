@@ -54,8 +54,6 @@ export class EventIterable implements AsyncIterable<{eventName:string|symbol, va
         }
         mutex.release();
 
-        console.log( queue );
-
         this.#privateEmitter.removeListener( "stop", onStop );
         for( const [ eventName, handler ] of Object.entries( handlers ) ) {
             this.#eventEmitter.removeListener( eventName, handler );
