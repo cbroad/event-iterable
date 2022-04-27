@@ -35,7 +35,7 @@ class TimerEventEmitter extends EventEmitter {
     const abortController = new AbortController();
     setTimeout( () => abortController.abort(), 10000 );
 
-    const iterable = new EventIterable( eventEmitter, ["tick", "tock"], abortController.signal );
+    const iterable = EventIterable.wrap( eventEmitter, ["tick", "tock"], abortController.signal );
     for await ( const event of iterable ) {
         console.log( event );
     }

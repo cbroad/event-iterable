@@ -1,5 +1,5 @@
 - [Class:EventIterable](#classeventiterable)
-  - [new EventIterable( eventEmitter, eventNames[, signal ] )](#new-eventiterable-eventemitter-eventnames-signal)
+  - [EventIterable.wrap( eventEmitter, eventNames[, signal ] )](#eventiterablewrap-eventemitter-eventnames-signal)
   - [eventIterable.stop()](#eventiterablestop)
 
 # Class:EventIterable
@@ -11,12 +11,13 @@ const { EventIterable } = require( "eventIterable" );
 import { EventIterable } from "eventIterable";
 ```
 
-EventIterable is a wrapper for [EventEmitter](https://nodejs.org/api/events.html#class-eventemitter), creating an AsyncIterable of the requested events which the user can, in an [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) context, iterate through using a [for await ... of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of) statement.  When being iterated over, EventIterable produces objects of type: <code language="typescript">{ eventName:string|symbol, value:any }</code> where eventName is the eventNames provided in the constructor.
+EventIterable is a wrapper for [EventEmitter](https://nodejs.org/api/events.html#class-eventemitter), creating an AsyncIterable of the requested events which the user can, in an [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) context, iterate through using a [for await ... of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of) statement.  When being iterated over, EventIterable produces objects of type: <code language="typescript">{ eventName:string|symbol, value:any }</code> where eventName is one of the eventNames provided in the constructor.
 
-## new EventIterable( eventEmitter, eventNames[, signal ] )
+## EventIterable.wrap( eventEmitter, eventNames[, signal ] )
 - **eventEmitter** <code>&lt;EventEmitter&gt;</code> the event emitter being wrapped
 - **eventNames** <code>&lt;string&gt;</code> | <code>&lt;symbol&gt;</code> | <code>&lt;(string|symbol)[]&gt;</code> the event names to be captured
 - **signal** <code>&lt;AbortSignal&gt;</code> optional signal from an AbortController to signal the EventIterable to stop as an alternative to eventIterable.stop()
+- Returns <code>&lt;EventIterable&gt;</code>
 
 
 ## eventIterable.stop()
@@ -66,7 +67,7 @@ class TimerEventEmitter extends EventEmitter {
     const abortController = new AbortController();
     setTimeout( () => abortController.abort(), 10000 );
 
-    const iterable = new EventIterable( eventEmitter, ["tick", "tock"], abortController.signal );
+    const iterable = EventIterable.wrap( eventEmitter, ["tick", "tock"], abortController.signal );
     for await ( const event of iterable ) {
         console.log( event );
     }

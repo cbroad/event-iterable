@@ -2,6 +2,13 @@ import { EventEmitter } from "events";
 
 import { Mutex } from "semasync";
 
+
+/**
+ * EventIterable is a wrapper for EventEmitter, creating an AsyncIterable of the requested events which
+ * the user can, in an async context, iterate through using a for "await ... of" statement.  When being
+ * iterated over, EventIterable produces objects of type: { eventName:string|symbol, value:any } where
+ * eventName is one of the eventNames provided in the constructor.
+ */
 export class EventIterable implements AsyncIterable<{eventName:string|symbol, value:any}> {
 
     #abortHandler:(()=>void)|undefined;
@@ -10,9 +17,16 @@ export class EventIterable implements AsyncIterable<{eventName:string|symbol, va
     #privateEmitter:EventEmitter = new EventEmitter();
     #signal:AbortSignal|undefined;
 
-    public constructor( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[] );
-    public constructor( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[], signal:AbortSignal );
-    public constructor( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[], signal?:AbortSignal ) {
+    /**
+     * Create an EventIterable
+     * 
+     * @param {EventEmitter} eventEmitter the event emitter being wrapped
+     * @param {string|symbol|(string|symbol)[]} eventNames the event names to be captured
+     * @param {AbortSignal} [signal] (optional) signal from an AbortController to signal the EventIterable to stop as an alternative to eventIterable.stop()
+     */
+    private constructor( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[] );
+    private constructor( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[], signal:AbortSignal );
+    private constructor( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[], signal?:AbortSignal ) {
         this.#signal = signal;
         this.#eventEmitter = eventEmitter;
         this.#eventNames = Array.isArray(eventNames) ? eventNames : [ eventNames ];
@@ -67,12 +81,30 @@ export class EventIterable implements AsyncIterable<{eventName:string|symbol, va
         }
     }
 
-    public stop() {
+
+    /**
+     * Signal the EventIterable to stop handling events and exit its generator function.
+     */
+    public stop():void {
         if( this.#signal?.aborted===true && this.#abortHandler ) {
             this.#signal!.removeEventListener( "abort", this.#abortHandler );
             this.#abortHandler = undefined;
         }
         this.#privateEmitter.emit( "stop" );
+    }
+
+    /**
+     * Wraps an EventEmitter into an EventIterable.
+     * @see {@link EventIterable}
+     * 
+     * @param {EventEmitter} eventEmitter the event emitter being wrapped
+     * @param {string|symbol|(string|symbol)[]} eventNames the event names to be captured
+     * @param {AbortSignal} [signal] (optional) signal from an AbortController to signal the EventIterable to stop as an alternative to eventIterable.stop()
+     */
+    public static wrap( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[] ):EventIterable;
+    public static wrap( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[], signal:AbortSignal ):EventIterable;
+    public static wrap( eventEmitter:EventEmitter, eventNames:string|symbol|(string|symbol)[], signal?:AbortSignal ):EventIterable {
+        return new EventIterable( eventEmitter, eventNames, signal! );
     }
 
 }
