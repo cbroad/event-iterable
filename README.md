@@ -1,5 +1,5 @@
 - [Class:EventIterable](#classeventiterable)
-  - [new EventIterable( eventEmitter, eventNames[, abortController ] )](#new-eventiterable-eventemitter-eventnames-abortcontroller)
+  - [new EventIterable( eventEmitter, eventNames[, signal ] )](#new-eventiterable-eventemitter-eventnames-signal)
   - [eventIterable.stop()](#eventiterablestop)
 
 # Class:EventIterable
