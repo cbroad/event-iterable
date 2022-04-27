@@ -4,10 +4,12 @@ import { Mutex } from "semasync";
 
 
 /**
- * EventIterable is a wrapper for EventEmitter, creating an AsyncIterable of the requested events which
- * the user can, in an async context, iterate through using a for "await ... of" statement.  When being
+ * @classdesc A wrapper for EventEmitter, creating an AsyncIterable of the requested events which
+ * the user can, in an async context, iterate through using a for-await-of statement.  When being
  * iterated over, EventIterable produces objects of type: { eventName:string|symbol, value:any } where
- * eventName is one of the eventNames provided in the constructor.
+ * eventName is one of the eventNames provided in the {@link wrap} function.
+ * @class
+ * @hideconstructor
  */
 export class EventIterable implements AsyncIterable<{eventName:string|symbol, value:any}> {
 
