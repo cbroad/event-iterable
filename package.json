@@ -6,7 +6,7 @@
     "url": "https://github.com/cbroad/event-iterable/issues"
   },
   "dependencies": {
-    "semasync": "^1.0.2"
+    "semasync": "^1.0.4"
   },
   "description": "wrapper that creates an AsyncIterable of events coming from an EventEmitter",
   "devDependencies": {
@@ -47,5 +47,5 @@
     "unbuild": "rimraf js types"
   },
   "types": "./types/EventIterable.d.ts",
-  "version": "1.0.6"
+  "version": "1.0.7"
 }
